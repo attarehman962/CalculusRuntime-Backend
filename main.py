@@ -1,5 +1,5 @@
 """
-CalcVoyager Backend — Starlette + stdlib sqlite3
+CalcVoyager Backend — Starlette + SQLite/Supabase
 Works on Python 3.10+ including 3.14.
 No pydantic, no aiosqlite, no SQLAlchemy.
 """
