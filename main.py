@@ -5,6 +5,7 @@ No pydantic, no aiosqlite, no SQLAlchemy.
 """
 
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from starlette.applications import Starlette
@@ -184,6 +185,12 @@ async def on_startup():
     await init_storage()
 
 
+@asynccontextmanager
+async def lifespan(app):
+    await on_startup()
+    yield
+
+
 # ── App ───────────────────────────────────────────────────────────────────────
 
 ALLOWED_ORIGINS = os.getenv(
@@ -212,5 +219,5 @@ app = Starlette(
             allow_headers=["*"],
         )
     ],
-    on_startup=[on_startup],
+    lifespan=lifespan,
 )
