@@ -1,5 +1,28 @@
-/.env
-.env
-./venv/
-.venv/
-/.venv/
+
+# make-folder-txt
+.txtconfig
+.txtignore
+backend.txt
+venv
+/.venv
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+# VS Code settings
+.vscode/
+# macOS files
+.DS_Store
+# Logs and temporary files
+*.log
+*.tmp
+# Ignore data files

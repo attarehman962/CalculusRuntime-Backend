@@ -1,16 +1,36 @@
 """
 CalcVoyager Backend
-FastAPI + SQLite — auth, progress, bookmarks, quiz scores
+FastAPI + stdlib sqlite3 — auth, progress, bookmarks, quiz scores.
+No aiosqlite, no SQLAlchemy, no external DB driver.
 """
 
 import os
+from pathlib import Path
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+# Load .env file manually (no python-dotenv needed)
+_env_file = Path(__file__).parent / ".env"
+if _env_file.exists():
+    for _line in _env_file.read_text().splitlines():
+        _line = _line.strip()
+        if _line and not _line.startswith("#") and "=" in _line:
+            _k, _, _v = _line.partition("=")
+            os.environ.setdefault(_k.strip(), _v.strip())
 
 from db import init_db
 from routers import auth, progress, bookmarks, quiz, solver_proxy
 
-app = FastAPI(title="CalcVoyager API", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_db()
+    yield
+
+
+app = FastAPI(title="CalcVoyager API", version="1.0.0", lifespan=lifespan)
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
 ALLOWED_ORIGINS = os.getenv(
@@ -24,13 +44,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-# ── Startup ───────────────────────────────────────────────────────────────────
-@app.on_event("startup")
-async def startup():
-    await init_db()
-
 
 # ── Routers ───────────────────────────────────────────────────────────────────
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
