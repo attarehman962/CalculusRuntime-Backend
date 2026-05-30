@@ -55,3 +55,13 @@ create index if not exists bookmarks_user_id_idx on public.bookmarks (user_id);
 create index if not exists quiz_scores_user_id_idx on public.quiz_scores (user_id);
 
 create index if not exists solver_history_user_id_idx on public.solver_history (user_id);
+
+-- This project uses backend-managed auth, not Supabase Auth.
+-- The backend validates its own JWT and talks to Supabase from server-side code.
+-- If RLS is enabled on these custom tables, anon/publishable keys will be blocked.
+-- For local development, disable RLS on these app-owned tables.
+alter table public.users disable row level security;
+alter table public.sections disable row level security;
+alter table public.bookmarks disable row level security;
+alter table public.quiz_scores disable row level security;
+alter table public.solver_history disable row level security;

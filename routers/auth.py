@@ -15,6 +15,11 @@ def storage_err(exc: Exception):
             500,
             "Supabase table public.users is missing. Run backend/supabase_schema.sql in the Supabase SQL Editor, then restart the backend.",
         )
+    if "row-level security" in message or "42501" in message:
+        return err(
+            500,
+            "Supabase RLS is blocking this request. Re-run backend/supabase_schema.sql in the Supabase SQL Editor, or use a backend-only Supabase service role/secret key.",
+        )
     return err(500, f"Database error: {message}")
 
 

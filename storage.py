@@ -12,7 +12,12 @@ DB_BACKEND = (
     or ""
 ).strip().lower()
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").strip()
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "").strip()
+SUPABASE_KEY = (
+    os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    or os.getenv("SUPABASE_SECRET_KEY")
+    or os.getenv("SUPABASE_KEY")
+    or ""
+).strip()
 USE_SUPABASE = DB_BACKEND == "supabase" or bool(SUPABASE_URL and SUPABASE_KEY)
 
 if USE_SUPABASE:
@@ -22,6 +27,14 @@ if USE_SUPABASE:
         )
 
     from supabase import create_client
+
+    if SUPABASE_KEY.startswith("sb_publishable_"):
+        print(
+            "[CalcVoyager] Warning: SUPABASE_KEY is a publishable key. "
+            "Use SUPABASE_SERVICE_ROLE_KEY for backend writes, or disable RLS "
+            "on the app tables in backend/supabase_schema.sql.",
+            flush=True,
+        )
 
     _supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
